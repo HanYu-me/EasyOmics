@@ -8,7 +8,7 @@
 
 #sad
 
-![Alt text](image.png)
+![Alt text](figures/image.png)
 1. Software Installation
 2.1 Docker Installation
 Docker, an open-source project developed in Go language, packages software and its dependencies into images for quick deployment of the runtime environment. 

@@ -54,6 +54,8 @@ After installing docker users need to follow these steps:
 
 <div align=center><img src="figures/image-14.png" width="300" /></div>
 
+- Click to run button to finish the container create poecess
+- Go to "Containers" page of docker decktop and run the created container
 - Enter "localhost:port" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface
 - Click the stop button in the container tab to exit the software.
 ---

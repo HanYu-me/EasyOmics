@@ -16,13 +16,13 @@ And it is a user-friendly application that allows users to perform association a
 | ----------- | ----------- |
 |[Data Matching](#1)|Preparing input files for subsequent analysis. |
 |[Phenotype Analysis](#2)|Providing critical insights into the input data characteristics and facilitates the detection of outlier values.|
-|[GWAS](#3)|Testing the significance of associations between each SNP and the phenotype using a linear mixed model|
-|[COJO](#4)|Reanalysing results from the GWAS function and identify secondary association signals|
-|[Locus Zoom](#5)|Displaying the significance, linkage, and nearby genes of SNPs in specific chromosome regions|
-|[Omic QTL](#6)|Employing linear models for association analysis of omics data and genotype data|
-|[Two Traits MR](#7)|Exploring causal relationships between two traits|
-|[SMR](#8)|Exploring causal relationships between trait and molecular trait|
-|[OmicWAS](#9)|Testing the associations between omic data and complex traits|
+|[GWAS](#3)|Testing the significance of associations between each SNP and the phenotype using a linear mixed model.|
+|[COJO](#4)|Reanalysing results from the GWAS function and identify secondary association signals.|
+|[Locus Zoom](#5)|Displaying the significance, linkage, and nearby genes of SNPs in specific chromosome regions.|
+|[Omic QTL](#6)|Employing linear models for association analysis of omics data and genotype data.|
+|[Two Traits MR](#7)|Exploring causal relationships between two traits.|
+|[SMR](#8)|Exploring causal relationships between trait and molecular trait.|
+|[OmicWAS](#9)|Testing the associations between omic data and complex traits.|
 
 ---
 ## Software Installation
@@ -46,21 +46,26 @@ After installing docker users need to follow these steps:
 
 - Set the container parameters. 
   - Container name could be any character.
-  - Host port could be 0 or any other four digits
+  - Host port could be 0 or any other four digits.
   - Directory :
-    - Host path is the local empty directory path to save analysis result
-    - Container path must be "/srv/shiny-server/Result/"port for output results.
-  - Environment variables don't need setting
+    - <b>Host path is the local empty directory path to save analysis result. </b>
+    - <b>Container path must be "/srv/shiny-server/Analysis_Result/" to mount the result of the container.</b>
+  - Environment variables don't need setting.
 
 <div align=center><img src="figures/image-14.png" width="300" /></div>
 
-- Click to run button to finish the container create poecess
-- Go to "Containers" page of docker decktop and run the created container
-- Enter "localhost:port" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface
-- Click the stop button in the container tab to exit the software.
+- Click to run button to finish the container create poecess.
+- Go to "Containers" page of docker decktop and run the created container.
+- Enter "localhost:Host port of container" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface.
+- When perform analysis, result will be automaticlly outputed into Host path.
+- The feedback and error of Easyomics and the invoked software are displayed in the logs bar of the Container during the analysis.
+
+<div align=center><img src="figures/image17.png" width="450" /></div>
+
+- Click the stop button in the "Container" page to exit the software.
 ---
 ## Panel and workflow
-The sidebar contains a select list to choose the analysis function, a file upload control to upload files required for different analyses, a parameter control to adjust the parameters before analysis, and an action button to perform the analysis. The main area occupies most of the horizontal width in the application window and contains visualized outputs and feedback
+The sidebar contains a select list to choose the analysis function, a file upload control to upload files required for different analyses, a parameter control to adjust the parameters before analysis, and an action button to perform the analysis. The main area occupies most of the horizontal width in the application window and contains visualized outputs and feedback.
 
 <div align=center><img src="figures/image-5.png" width="200" /></div>
 
@@ -73,11 +78,12 @@ GWAs function can perform association analysis between genotype and phenotype an
 
 ![Alt text](figures/image-6.png)
 
+
 ---
 ## Software Usage
 ### <h3 id="1">Data Matching</h3>
 #### Input Files
-- Text files are split by "tab", containing at least three columns: family code, individual code, and phenotypic value of the trait (supports multiple phenotypes).
+- Text files are split by "tab", containing at least three .columns: family code, individual code, and phenotypic value of the trait (supports multiple phenotypes).
 ```txt
 family id FT16
 108 108 52.25
@@ -141,8 +147,7 @@ For single trait EasyOmics presents the phenotype distribution in a density plot
 
 - VCF file output by the "Data Matching" feature.
 #### Parameter
-- Threshold: A value setting the significance threshold (P-value) for GWAS analysis. SNPs with P-values below this threshold are retained. Supports numeric input, defaulting to 5e-8. For users unsure of the 
-significance threshold, entering "Bonferroni" sets it to 0.05 divided by the number of SNPs.
+- Threshold: A value setting the significance threshold (P-value) for GWAS analysis. SNPs with P-values below this threshold are retained. Supports numeric input, defaulting to 5e-8. For users unsure of the significance threshold, entering "Bonferroni" sets it to 0.05 divided by the number of SNPs.
 
 - Color: Sets adjacent chromosome colors in the Manhattan plot 
 visualization, requiring two hexadecimal colors connected by an underscore.
@@ -152,9 +157,11 @@ visualization, requiring two hexadecimal colors connected by an underscore.
 #### Analysis Process
 The software uses GCTA to conduct a mixed linear model association analysis for each SNP and phenotype. If the inflation factor is bigger than 1.1, lambda adjusted p value will be used. If "Show Top SNPs" is selected, EasyOmics extracts and merges SNPs based on their significance, physical distance, and Linkage Disequilibrium (LD),  and annotates the most significant independent SNPs on the Manhattan plot.
 #### Output Results
-- Manhattan plot
+- Manhattan plot.
+  
 ![Alt text](figures/Fig3A.png)
-- QQ plot
+
+- QQ plot.
 
 
 
@@ -212,7 +219,7 @@ It also analyzes and plots phenotypes of individuals with different genotypes of
 #### Output Results
 - Visualization of results including linkage and P-values of the selected SNP and other SNPs; genes in the interval; linkage between all SNPs in the interval. 
 ![Alt text](figures/Fig3C.png)
-- Phenotypes of individuals with different genotypes of the selected SNP
+- Phenotypes of individuals with different genotypes of the selected SNP.
 
 <div align=center><img src="figures/image-4.png" width="70%"/></div>
 
@@ -235,7 +242,7 @@ EasyOmics first uses Plink for principal component analysis of population struct
 #### Output Results
 - Scatter plot of genes or probes and their QTL positions on chromosomes.
 
-<div align=center><img src="figures/image-9.png" width="100%"/></div>
+<div align=center><img src="figures/image18.png" width="100%"/></div>
 
 - Text file containing association results of all SNPs.
   
@@ -316,7 +323,7 @@ Uses SMR software to analyze whether the instrumental variable SNP affects the t
 #### Parameter
 Same as "GWAS".
 #### Analysis Process
-Using a mixed linear model-based omic association (MOA) approach implemented in OSCA to test for associations between omic data and complex traits
+Using a mixed linear model-based omic association (MOA) approach implemented in OSCA to test for associations between omic data and complex traits.
 #### Output Results
 - Manhattan plot visualizing the association analysis result file.
 ![Alt text](figures/Fig6.png)

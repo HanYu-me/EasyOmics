@@ -1,5 +1,5 @@
 
-# ODIG
+# EasyOmics
 A graphical user interface for omics data integrated GWAS  
 
 | | |
@@ -9,7 +9,7 @@ A graphical user interface for omics data integrated GWAS
 
 
 ## Description
-ODIG is an R Shiny application with a graphic user interface (GUI) application that integrates the Omic data for GWAS analysis. 
+EasyOmics is an R Shiny application with a graphic user interface (GUI) application that integrates the Omic data for GWAS analysis. 
 And it is a user-friendly application that allows users to perform association analysis locally without any coding.
 
 |Function|Description|
@@ -27,12 +27,14 @@ And it is a user-friendly application that allows users to perform association a
 ---
 ## Software Installation
 ### Docker installation
-### ODIG installation
+### EasyOmics installation
 ### Start
 
 ---
 ## Panel and workflow
 The sidebar contains a select list to choose the analysis function, a file upload control to upload files required for different analyses, a parameter control to adjust the parameters before analysis, and an action button to perform the analysis. The main area occupies most of the horizontal width in the application window and contains visualized outputs and feedback
+
+<img src="image-5.png" width="200" />
 
 ![Alt text](image.png)
 
@@ -64,9 +66,9 @@ Output the processed VCF file and phenotype file to the directory bound when run
 #### Parameter
 - Analysis type: Select the method of analyzing the phenotype file, including options for multiple traits and single traits.
 #### Analysis Process
-For multi-trait analyses, ODIG calculates the distribution of phenotypes, phenotypic variance, genetic variance, and narrow-sense heritability using the AI-REML method. 
+For multi-trait analyses, EasyOmics calculates the distribution of phenotypes, phenotypic variance, genetic variance, and narrow-sense heritability using the AI-REML method. 
 
-For single trait ODIG presents the phenotype distribution in a density plot and visualizes population structure through PCA analysis of SNP data in a scatter plot, annotating each point with its corresponding ID. 
+For single trait EasyOmics presents the phenotype distribution in a density plot and visualizes population structure through PCA analysis of SNP data in a scatter plot, annotating each point with its corresponding ID. 
 #### Output Results
 - Multi-trait analysis results, with different colors distinguishing the results of different traits. 
 ![Alt text](Fig2A.png)
@@ -90,7 +92,7 @@ visualization, requiring two hexadecimal colors connected by an underscore.
 - Show Top SNPs: Option to annotate the ID of the most significant SNPs in the Manhattan plot.
 
 #### Analysis Process
-The software uses GCTA to conduct a mixed linear model association analysis for each SNP and phenotype. If the inflation factor is bigger than 1.1, lambda adjusted p value will be used. If "Show Top SNPs" is selected, ODIG extracts and merges SNPs based on their significance, physical distance, and Linkage Disequilibrium (LD),  and annotates the most significant independent SNPs on the Manhattan plot.
+The software uses GCTA to conduct a mixed linear model association analysis for each SNP and phenotype. If the inflation factor is bigger than 1.1, lambda adjusted p value will be used. If "Show Top SNPs" is selected, EasyOmics extracts and merges SNPs based on their significance, physical distance, and Linkage Disequilibrium (LD),  and annotates the most significant independent SNPs on the Manhattan plot.
 #### Output Results
 - Manhattan plot
 ![Alt text](Fig3A.png)
@@ -162,7 +164,7 @@ Normalization Data: Choose whether to normalize omics data to prevent the effect
 Threshold: Same as "GWAs."
 
 #### Analysis Process
-ODIG first uses Plink for principal component analysis of population structure, then uses the top 20 principal components as covariates for parallel linear model-based association analysis of each omics data and genotype data. Then calculates the chromosomal positions of SNPs and molecular traits based on user input in file displays them. 
+EasyOmics first uses Plink for principal component analysis of population structure, then uses the top 20 principal components as covariates for parallel linear model-based association analysis of each omics data and genotype data. Then calculates the chromosomal positions of SNPs and molecular traits based on user input in file displays them. 
 #### Output Results
 - Scatter plot of genes or probes and their QTL positions on chromosomes.
 ![Alt text](Fig4.jpg)

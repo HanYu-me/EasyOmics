@@ -31,26 +31,26 @@ Docker is an open-source project developed in Go language, which could package s
 
 For Windows/Mac OS users, please visit Docker's official website to download the Docker Desktop application: https://docs.docker.com/get-docker/
 
-Note, Windows users need refer to Microsoft's documentation to download and set up the WSL2 subsystem after insatlled docker: https://docs.microsoft.com/en-us/windows/wsl/install
+Note, Windows users need to refer to Microsoft's documentation to download and set up the WSL2 subsystem after installed docker: https://docs.microsoft.com/en-us/windows/wsl/install
 ### EasyOmics installation
-After installing docker users need following these steps:
+After installing docker users need to follow these steps:
 - Open the Docker Desktop application.
 - Search for yuhan2000 and pull (download) the image yuhan2000/gwas:latest
 
 <div align=center><img src="figures/image-13.png" width="450" /></div>
 
 ### Start
-- Click to run buttom to creat a container of downloaded figures/image.
+- Click to run button to create a container of downloaded image.
 
 <div align=center><img src="figures/image-11.png" width="450" /></div>
 
 - Set the container parameters. 
-  - Container name could be any characters.
+  - Container name could be any character.
   - Host port could be 0 or any other four digits
   - Directory :
     - Host path is the local empty directory path to save analysis result
     - Container path must be "/srv/shiny-server/Result/"port for output results.
-  - Environment varables don't need setting
+  - Environment variables don't need setting
 
 <div align=center><img src="figures/image-14.png" width="300" /></div>
 
@@ -75,7 +75,7 @@ GWAs function can perform association analysis between genotype and phenotype an
 ## Software Usage
 ### <h3 id="1">Data Matching</h3>
 #### Input Files
-- Text files split by "tab", containing at least three columns: family code, individual code, and phenotypic value of the trait (supports multiple phenotypes).
+- Text files are split by "tab", containing at least three columns: family code, individual code, and phenotypic value of the trait (supports multiple phenotypes).
 ```txt
 family id FT16
 108 108 52.25
@@ -139,7 +139,7 @@ For single trait EasyOmics presents the phenotype distribution in a density plot
 
 - VCF file output by the "Data Matching" feature.
 #### Parameter
-- Threshold: A value setting the significance threshold (P-value) for GWAs analysis. SNPs with P-values below this threshold are retained. Supports numeric input, defaulting to 5e-8. For users unsure of the 
+- Threshold: A value setting the significance threshold (P-value) for GWAS analysis. SNPs with P-values below this threshold are retained. Supports numeric input, defaulting to 5e-8. For users unsure of the 
 significance threshold, entering "Bonferroni" sets it to 0.05 divided by the number of SNPs.
 
 - Color: Sets adjacent chromosome colors in the Manhattan plot 
@@ -229,7 +229,7 @@ Normalization Data: Choose whether to normalize omics data to prevent the effect
 Threshold: Same as "GWAs."
 
 #### Analysis Process
-EasyOmics first uses Plink for principal component analysis of population structure, then uses the top 20 principal components as covariates for parallel linear model-based association analysis of each omics data and genotype data. Then calculates the chromosomal positions of SNPs and molecular traits based on user input in file displays them. 
+EasyOmics first uses Plink for principal component analysis of population structure, then uses the top 20 principal components as covariates for parallel linear model-based association analysis of each omics data and genotype data. Then calculates the chromosomal positions of SNPs and molecular traits based on the user's input in file and displays them. 
 #### Output Results
 - Scatter plot of genes or probes and their QTL positions on chromosomes.
 

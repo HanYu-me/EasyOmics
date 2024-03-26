@@ -36,10 +36,12 @@ Note, Windows users need refer to Microsoft's documentation to download and set 
 After installing docker users need following these steps:
 - Open the Docker Desktop application.
 - Search for yuhan2000 and pull (download) the image yuhan2000/gwas:latest
-![Alt text](figures/image-13.png)
+
+<div align=center><img src="figures/image-13.png" width="450" /></div>
 ### Start
 - Click to run buttom to creat a container of downloaded figures/image.
-![Alt text](figures/image-11.png)
+
+<div align=center><img src="figures/image-11.png" width="450" /></div>
 - Set the container parameters. 
   - Container name could be any characters.
   - Host port could be 0 or any other four digits
@@ -47,14 +49,15 @@ After installing docker users need following these steps:
     - Host path is the local empty directory path to save analysis result
     - Container path must be "/srv/shiny-server/Result/"port for output results.
   - Environment varables don't need setting
-![Alt text](figures/image-14.png)
+
+<div align=center><img src="figures/image-14.png" width="300" /></div>
 - Enter "localhost:port" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface
 - Click the stop button in the container tab to exit the software.
 ---
 ## Panel and workflow
 The sidebar contains a select list to choose the analysis function, a file upload control to upload files required for different analyses, a parameter control to adjust the parameters before analysis, and an action button to perform the analysis. The main area occupies most of the horizontal width in the application window and contains visualized outputs and feedback
 
-<div align=center><img src="figures/image-5.png" width="300" /></div>
+<div align=center><img src="figures/image-5.png" width="200" /></div>
 
 
 
@@ -206,6 +209,7 @@ It also analyzes and plots phenotypes of individuals with different genotypes of
 - Phenotypes of individuals with different genotypes of the selected SNP
 
 <div align=center><img src="figures/image-4.png" width="70%"/></div>
+
 - Result of invoked softwares.
 ---
 ### <h3 id="6">Omic QTL</h3>
@@ -225,7 +229,9 @@ EasyOmics first uses Plink for principal component analysis of population struct
 - Scatter plot of genes or probes and their QTL positions on chromosomes.
 
 <div align=center><img src="figures/image-9.png" width="100%"/></div>
+
 - Text file containing association results of all SNPs.
+  
 ```txt
 SNP gene beta t-stat p-value FDR
 1:19461508 AT1G52270 0.674590385651332 28.123511975575 4.14591267172224e-112 2.02150807617404e-102
@@ -235,6 +241,7 @@ SNP gene beta t-stat p-value FDR
 1:19463170 AT1G52270 0.671582251314867 27.9031631086884 6.15721634281558e-111 1.20088034160951e-101
 ```
 - Frequency of SNPs located in different molecular traits.
+  
 ```txt
 Prob freq
 AT1G52270 4
@@ -243,6 +250,7 @@ AT1G12340 3
 AT2G05140 3
 ```
 - Frequency of significant associated traits in each leading SNPs.
+  
 ```txt
 QTL freq
 1:10021441 1

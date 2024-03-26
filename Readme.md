@@ -211,6 +211,7 @@ It also analyzes and plots phenotypes of individuals with different genotypes of
 <div align=center><img src="figures/image-4.png" width="70%"/></div>
 
 - Result of invoked softwares.
+ 
 ---
 ### <h3 id="6">Omic QTL</h3>
 #### Input Files
@@ -293,7 +294,9 @@ Uses SMR software to analyze whether the instrumental variable SNP affects the t
 -  Prioritizing genes at a GWAS locus using SMR analysis. Shown are results at Omic data loci for phenotype. Top plot is the P values for SNPs from GWAs. Middle plot is the P values for SNPs from omicQTL. Bottom plot is the gene position in the selected region.
 ![Alt text](figures/Fig5A.png)
 - Scatter plot of detected SNP effect on Omic data and phenotype.
-![Alt text](figures/Fig5B.png)
+
+<div align=center><img src="figures/Fig5B.png" width="450" /></div>
+
 - Result of invoked softwares.
 
 ---

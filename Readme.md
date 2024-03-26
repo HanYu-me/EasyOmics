@@ -27,28 +27,74 @@ And it is a user-friendly application that allows users to perform association a
 ---
 ## Software Installation
 ### Docker installation
-### EasyOmics installation
-### Start
+Docker is an open-source project developed in Go language, which could package software and its dependencies into images for quick deployment environment.
 
+For Windows/Mac OS users, please visit Docker's official website to download the Docker Desktop application: https://docs.docker.com/get-docker/
+
+Note, Windows users need refer to Microsoft's documentation to download and set up the WSL2 subsystem after insatlled docker: https://docs.microsoft.com/en-us/windows/wsl/install
+### EasyOmics installation
+After installing docker users need following these steps:
+- Open the Docker Desktop application.
+- Search for yuhan2000 and pull (download) the image yuhan2000/gwas:latest
+![Alt text](figures/image-13.png)
+### Start
+- Click to run buttom to creat a container of downloaded figures/image.
+![Alt text](figures/image-11.png)
+- Set the container parameters. 
+  - Container name could be any characters.
+  - Host port could be 0 or any other four digits
+  - Directory :
+    - Host path is the local empty directory path to save analysis result
+    - Container path must be "/srv/shiny-server/Result/"port for output results.
+  - Environment varables don't need setting
+![Alt text](figures/image-14.png)
+- Enter "localhost:port" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface
+- Click the stop button in the container tab to exit the software.
 ---
 ## Panel and workflow
 The sidebar contains a select list to choose the analysis function, a file upload control to upload files required for different analyses, a parameter control to adjust the parameters before analysis, and an action button to perform the analysis. The main area occupies most of the horizontal width in the application window and contains visualized outputs and feedback
 
-<img src="image-5.png" width="200" />
+<div align=center><img src="figures/image-5.png" width="300" /></div>
 
-![Alt text](image.png)
+
+
+
+![Alt text](figures/image.png)
 
 GWAs function can perform association analysis between genotype and phenotype and find QTLs with significant association. OmicQTL function treats omic data as molecular phenotype and tests the association with genotypic data. MR function integrates the QTLs and OmicQTLs to find causal variants. OmicWAS tests the association between phenotypic and omics data.
 
-![Alt text](image-1.png)
+![Alt text](figures/image-6.png)
 
 ---
 ## Software Usage
 ### <h3 id="1">Data Matching</h3>
 #### Input Files
 - Text files split by "tab", containing at least three columns: family code, individual code, and phenotypic value of the trait (supports multiple phenotypes).
-
+```txt
+family id FT16
+108 108 52.25
+139 139 52.75
+159 159 56.75
+265 265 47.25
+350 350 51.5
+351 351 65.33333333
+403 403 54.25
+410 410 65.25
+424 424 68.25
+```
 - Standard VCF format genotype file, where the individual code must follow the format "family code_individual code".
+```txt
+#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  108_108 139_139
+1       73      1:73    C       A       .       .       PR      GT      0/0     0/0
+1       92      1:92    A       C       .       .       PR      GT      1/1     1/1
+1       110     1:110   G       T       .       .       PR      GT      0/0     0/0
+1       253     1:253   T       C       .       .       PR      GT      0/0     0/0
+1       353     1:353   G       A       .       .       PR      GT      0/0     0/0
+1       363     1:363   C       G       .       .       PR      GT      1/1     1/1
+1       425     1:425   C       T       .       .       PR      GT      0/0     0/0
+1       502     1:502   T       C       .       .       PR      GT      0/0     0/0
+1       508     1:508   C       T       .       .       PR      GT      0/0     0/0
+```
 
 #### Parameter
 None.
@@ -71,9 +117,13 @@ For multi-trait analyses, EasyOmics calculates the distribution of phenotypes, p
 For single trait EasyOmics presents the phenotype distribution in a density plot and visualizes population structure through PCA analysis of SNP data in a scatter plot, annotating each point with its corresponding ID. 
 #### Output Results
 - Multi-trait analysis results, with different colors distinguishing the results of different traits. 
-![Alt text](Fig2A.png)
+
+<div align=center><img src="figures/Fig2A.png" width="300" /></div>
+
 - For single-trait analysis, the results display phenotype distribution in a density gradient format with marked individual codes, assisting users in inspecting unreasonable phenotypic data. The genetic structure, shown in a two-dimensional principal component analysis along with marked individual codes, helps users check the genetic composition of the analyzed population. 
-![Alt text](Fig2CD.png)
+
+<div align=center><img src="figures/image-8.png" width="80%" /></div>
+
 - Result of invoked softwares.
 
 ---
@@ -95,15 +145,20 @@ visualization, requiring two hexadecimal colors connected by an underscore.
 The software uses GCTA to conduct a mixed linear model association analysis for each SNP and phenotype. If the inflation factor is bigger than 1.1, lambda adjusted p value will be used. If "Show Top SNPs" is selected, EasyOmics extracts and merges SNPs based on their significance, physical distance, and Linkage Disequilibrium (LD),  and annotates the most significant independent SNPs on the Manhattan plot.
 #### Output Results
 - Manhattan plot
-![Alt text](Fig3A.png)
+![Alt text](figures/Fig3A.png)
 - QQ plot
-![Alt text](Fig3B.png)
+
+
+
+<div align=center><img src="figures/Fig3B.png" width="50%"/></div>
 - Text file containing information on the most significant independent SNPs.
- ```txt
+  
+```txt
     CHR SNP POS A1 A2 AF1 BETA SE P N
     5 5:18590591 120291299.92 T C 0.0793651 10.331 1.5328 1.58423e-11 630
- ```
+```
 - Association analysis result files.
+  
 ```txt
 Chr SNP bp A1 A2 Freq b se p N
 1 1:73 73 A C 0.068254 1.10844 1.36156 0.41559 630
@@ -147,9 +202,10 @@ It also analyzes and plots phenotypes of individuals with different genotypes of
 
 #### Output Results
 - Visualization of results including linkage and P-values of the selected SNP and other SNPs; genes in the interval; linkage between all SNPs in the interval. 
-![Alt text](Fig3C.png)
+![Alt text](figures/Fig3C.png)
 - Phenotypes of individuals with different genotypes of the selected SNP
-![Alt text](image-4.png)
+
+<div align=center><img src="figures/image-4.png" width="70%"/></div>
 - Result of invoked softwares.
 ---
 ### <h3 id="6">Omic QTL</h3>
@@ -167,7 +223,8 @@ Threshold: Same as "GWAs."
 EasyOmics first uses Plink for principal component analysis of population structure, then uses the top 20 principal components as covariates for parallel linear model-based association analysis of each omics data and genotype data. Then calculates the chromosomal positions of SNPs and molecular traits based on user input in file displays them. 
 #### Output Results
 - Scatter plot of genes or probes and their QTL positions on chromosomes.
-![Alt text](Fig4.jpg)
+
+<div align=center><img src="figures/image-9.png" width="100%"/></div>
 - Text file containing association results of all SNPs.
 ```txt
 SNP gene beta t-stat p-value FDR
@@ -208,7 +265,8 @@ Threshold：Same as "GWAs."
 Uses GCTA software's Mendelian randomization function to analyze whether the instrumental variable SNP affects trait in file one through the trait in file two, thus determining the causal relationship between the two traits. 
 #### Output Results
 - Correlation of effect values of SNPs passing the threshold on the two traits. 
-![Alt text](gsmr_result.png)
+
+<div align=center><img src="figures/gsmr_result.png" width="50%"/></div>
 - Result of invoked softwares.
 
 ---
@@ -225,9 +283,9 @@ Threshold：Same as "GWAs."
 Uses SMR software to analyze whether the instrumental variable SNP affects the trait through the molecular trait, conducting parallel analysis for each molecular trait. 
 #### Output Results
 -  Prioritizing genes at a GWAS locus using SMR analysis. Shown are results at Omic data loci for phenotype. Top plot is the P values for SNPs from GWAs. Middle plot is the P values for SNPs from omicQTL. Bottom plot is the gene position in the selected region.
-![Alt text](Fig5A.png)
+![Alt text](figures/Fig5A.png)
 - Scatter plot of detected SNP effect on Omic data and phenotype.
-![Alt text](Fig5B.png)
+![Alt text](figures/Fig5B.png)
 - Result of invoked softwares.
 
 ---
@@ -243,7 +301,7 @@ Same as "GWAS".
 Using a mixed linear model-based omic association (MOA) approach implemented in OSCA to test for associations between omic data and complex traits
 #### Output Results
 - Manhattan plot visualizing the association analysis result file.
-![Alt text](Fig6.png)
+![Alt text](figures/Fig6.png)
 - Information about the most significant genes saved in the form of text files.
 ```txt
 CHR GENE POS BETA SE P

@@ -38,10 +38,12 @@ After installing docker users need following these steps:
 - Search for yuhan2000 and pull (download) the image yuhan2000/gwas:latest
 
 <div align=center><img src="figures/image-13.png" width="450" /></div>
+
 ### Start
 - Click to run buttom to creat a container of downloaded figures/image.
 
 <div align=center><img src="figures/image-11.png" width="450" /></div>
+
 - Set the container parameters. 
   - Container name could be any characters.
   - Host port could be 0 or any other four digits
@@ -51,6 +53,7 @@ After installing docker users need following these steps:
   - Environment varables don't need setting
 
 <div align=center><img src="figures/image-14.png" width="300" /></div>
+
 - Enter "localhost:port" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface
 - Click the stop button in the container tab to exit the software.
 ---
@@ -154,6 +157,7 @@ The software uses GCTA to conduct a mixed linear model association analysis for 
 
 
 <div align=center><img src="figures/Fig3B.png" width="50%"/></div>
+
 - Text file containing information on the most significant independent SNPs.
   
 ```txt
@@ -276,6 +280,7 @@ Uses GCTA software's Mendelian randomization function to analyze whether the ins
 - Correlation of effect values of SNPs passing the threshold on the two traits. 
 
 <div align=center><img src="figures/gsmr_result.png" width="50%"/></div>
+
 - Result of invoked softwares.
 
 ---

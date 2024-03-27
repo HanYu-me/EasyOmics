@@ -2,6 +2,7 @@
 # EasyOmics
 A graphical interface for population-scale omics data association, integration and visualization
 
+
 | | |
 | --- | --- |
 | Author  | Yu Han ([yuhan](https://www.researchgate.net/profile/Yu-Han-165)) |
@@ -81,6 +82,20 @@ GWAs function can perform association analysis between genotype and phenotype an
 
 ---
 ## Software Usage
+
+### Example data
+Example data have been deposited in https://github.com/HanYu-me/EasyOmics/tree/main/examples
+
+FT10: Flowering time of Arabidopsis thaliana at 10°C.
+
+transcriptome_phe: Gene expression RPKM matrix.
+
+Arabidopsis_thaliana.TAIR10.55: A gff3 format file for gene annotation.
+
+Sample_30000_vcf: Vcf file containing 30,000 SNPs sampled from the raw data.
+
+
+---
 ### <h3 id="1">Data Matching</h3>
 #### Input Files
 - Text files are split by "tab", containing at least three .columns: family code, individual code, and phenotypic value of the trait (supports multiple phenotypes).

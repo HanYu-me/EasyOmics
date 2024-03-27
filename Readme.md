@@ -1,6 +1,6 @@
 
 # EasyOmics
-A graphical user interface for omics data integrated GWAS  
+A graphical interface for population-scale omics data association, integration and visualization
 
 | | |
 | --- | --- |

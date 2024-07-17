@@ -57,7 +57,7 @@ After installing docker users need to follow these steps:
 
 - Click to run button to finish the container create poecess.
 - Go to "Containers" page of docker decktop and run the created container.
-- Enter "localhost:Host port of container" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface.
+- Enter "localhost:Host port of container" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface. If "Host port" of container was set to 0, please check the port of the container.
 - When perform analysis, result will be automaticlly outputed into Host path.
 - The feedback and error of Easyomics and the invoked software are displayed in the logs bar of the Container during the analysis.
 
@@ -92,7 +92,7 @@ phe_10env: Flowering time of Arabidopsis thaliana at 10 different environments.
 
 Matched_phe_sub5000: Gene expression RPKM matrix of sampled 5000 genes.
 
-Arabidopsis_thaliana.TAIR10.55.zip: A gff3 format file for gene annotation. Please uncompress it before performing analysis.
+Arabidopsis_thaliana.TAIR10.55.gff3.zip: A gff3 format file of gene annotation. Please uncompress it before performing analysis.
 
 sample_10000_vcf: Vcf file containing 10,000 SNPs sampled from the raw data.
 

@@ -9,8 +9,9 @@ smr_fun=function(exposure,outcome,out,threshold,gtf){
 
 
   ##load mlm result of output and delect some colums
-  library(data.table)
-  library(stringr)
+  message("Converting mlm file to SMR format")
+  suppressMessages(library(data.table))
+  suppressMessages(library(stringr))
   print("make file")
   data=data.frame(fread(outcome))
   gwa=data
@@ -19,6 +20,7 @@ smr_fun=function(exposure,outcome,out,threshold,gtf){
   write.table(data,paste0(inter,"smr_output.ma"),row.names = F,col.names = T,quote = F)
 
   ##make esi file
+  message("Converting Omic QTL file to SMR format")
   system(paste("/usr/bin/python3 code/gff_format.py",gtf,paste0(inter,"smrgff.gff3")))
   gtf=data.frame(fread(paste0(inter,"smrgff.gff3"),fill=T))
   gene=data.frame(str_split_fixed(str_split_fixed(gtf$V9[which(gtf$V3=="gene")],";",2)[,1],":",2)[,2])
@@ -61,7 +63,7 @@ smr_fun=function(exposure,outcome,out,threshold,gtf){
 
   
   ##update of BESD
-  print("update file")
+  
   cmd_updata=paste(smr,"--beqtl-summary",paste0(inter,"BESD"),"--update-esi", paste0(inter,"new.esi"))
   write.table(cmd_updata,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
   system(cmd_updata)
@@ -81,11 +83,13 @@ smr_fun=function(exposure,outcome,out,threshold,gtf){
     threshold=as.numeric(threshold)
   }
   ##SMR
-  print("SMR......")
+  
+  message("Performing SMR")
   cmd_smr=paste(smr,"--bfile",paste0(inter,"bfile"),"--gwas-summary", paste0(inter,"smr_output.ma"),"--beqtl-summary",paste0(inter,"BESD"),"--peqtl-smr",threshold,"--thread-num 10",
                 "--out",paste0(out,"smr"))
   write.table(cmd_smr,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
   system(cmd_smr)
+  message("The SMR result was saved in smr.smr")
   #generate plot file
   data=data.frame(fread(paste0(out,"smr",".smr")))
   write.table(sum(data$p_GWAS<threshold),file="info.txt",append=T,row.names = F,col.names = F,quote=F)
@@ -101,7 +105,7 @@ smr_fun=function(exposure,outcome,out,threshold,gtf){
         system(cmd_smrplot)
       }
       for(i in genename){
-        print(i)
+        message(paste0("Plotting SMR result of ",i))
         SMRData = ReadSMRData(paste0(out,"plot/",i,"_smr.",i,".txt"))
         png(paste0(out,i,"smr.png"),width=1000,height=1000)
         par(mfrow=c(2,2),mar=c(10, 10, 10, 10))
@@ -112,7 +116,9 @@ smr_fun=function(exposure,outcome,out,threshold,gtf){
       }
     }
   }else{
-    print("No significant smr result")
+    message("No significant SMR result")
+    message("Maybe the over setted threshold")
+    message("Please Check the .log file")
   }
 }
 # Code --------------------------------                   ------------------------------------

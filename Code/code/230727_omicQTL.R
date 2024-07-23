@@ -3,8 +3,8 @@
 omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   source("code/All_basic_function.R")
   osca="../../home/software/osca-0.46.1-linux-x86_64/osca-0.46.1"
-  library(data.table)
-  library(MatrixEQTL)
+  suppressMessages(library(data.table))
+  suppressMessages(library(MatrixEQTL))
   inter="inter_result/"
   data=data.frame(fread(omic))
   #data[1:10,1:10]
@@ -25,18 +25,19 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   data=data[,names]
   ##normalization
   if(norm=="zscore"){
+    message("Z-score phenotype data")
     data=cbind.data.frame(data[,1:2],
                           apply(data[,3:ncol(data)],2,zscore))
   }
   
   ##matrix eQTL analysis
-  library(MatrixEQTL)
+  suppressMessages(library(MatrixEQTL))
   ##make exp file
+  message("Converting phenotype format to MatrixEQTL format")
   data=data.frame(t(data))
   data=cbind.data.frame(row.names(data),data)
   data=data[-1,]
-  names(data)=as.character(as.numeric(data[1,]))
-  names(data)[1]="gene"
+  names(data)=c("gene",as.character(as.numeric(data[1,-1])))
   data=data[-1,]
   ###separate the data into five file to parallel analysis
   mark=split(1:nrow(data),cut(seq_along(1:nrow(data)),breaks=2,labels = F))
@@ -47,17 +48,18 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   }
   
   ##make snp file
-  library(dplyr)
+  suppressMessages(library(dplyr))
   #BiocManager::install("VariantAnnotation",type="binary")
   #BiocManager::install('snpStats')
-  library(VariantAnnotation)
-  library(snpStats)
+  suppressMessages(library(VariantAnnotation))
+  suppressMessages(library(snpStats))
   #convert.vcf(vcf.file=vcf,genotype_file_name = paste0(inter,"snp_for_eqtl.txt"))
   write.table("maked",file="info.txt",append=T,row.names = F,col.names = F,quote=F)
   ##make cvrt(PC1-40) file 
   plink="softwares\\plink\\plink.exe"
   cmd_cvrt=paste("../../home/software/plink","--vcf",vcf,"--pca 20","--out",paste0(inter,"pca_40"))
   write.table(cmd_cvrt,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
+  message("Performing PCA analysis with genetic data")
   system(cmd_cvrt)
   pca=read.table(file=paste0(inter,"pca_40",".eigenvec"))
   row.names(pca)=pca[,2]
@@ -65,6 +67,7 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   row.names(pca)=paste(rep("pc_",20),1:20)
   write.table(pca,file=paste0(inter,"pca_40_eqtl.txt"),quote = F,sep="\t")
   
+  message("Loading data")
   #snp_text=data.frame(fread(paste0(inter,'snpmatrix2.txt')))
   #snp_text[1:10,1:10]
   #write.table(snp_text,row.names = F, col.names = F, quote = F, sep = "\t",file =paste0(inter,'snpmatrix3.txt') )
@@ -77,6 +80,8 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   snps$fileSliceSize = 10000;      # read file in slices of 2,000 rows
   snps$LoadFile(paste0(inter,'snpmatrix2.txt'))
 
+  message("Converting PCA format to MatrixQtl format")
+  message("Selecting 20 PC as covariant")
   cvrt = SlicedData$new();
   cvrt$fileDelimiter = "\t";      # the TAB character
   cvrt$fileOmitCharacters = "NA"; # denote missing values;
@@ -94,7 +99,8 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   }
   ##do eQTL scan
   write.table("dataload",file="info.txt",append=T,row.names = F,col.names = F,quote=F)
-  library(parallel)
+  suppressMessages(library(parallel))
+  message("Performing Omic QTL mapping")
   clnum<-2
   cl <- makeCluster(getOption("cl.cores", clnum));
   clusterExport(cl,deparse(substitute(eQTL_para)))
@@ -112,6 +118,7 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
     qtl=data.table(fread(paste0(inter,"omic_qtl_",i,".txt")))
     all_qtl=rbind.data.frame(all_qtl,qtl)
   }
+  message("The Omic QTL result was saved in qtls.txt")
   write.table(all_qtl,file=paste0(out,"qtls.txt"),quote = F,row.names = F,col.names = T)
   all_qtl=as.data.frame(all_qtl)
   ## remove linked QTL
@@ -146,10 +153,14 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   # stopCluster(cl)
   #write.table(all_qtl_filte,file=paste0(out,"qtls_filted.txt"),quote = F,row.names = F,col.names = T)
   ##cis-trans analysis
-  if(type=="Transcriptom"){
-    library(stringr)
+  
+  if(grepl("gff",gtf)){
+    if(type=="Transcriptom"){
+    suppressMessages(library(stringr))
     system(paste("/usr/bin/python3 code/gff_format.py",gtf,paste0(inter,"qtlgff.gff3")))
     gtf=data.frame(fread(paste0(inter,"qtlgff.gff3"),fill=T))
+    message("As you provided gff or gff like file, cis-trans QTL plot will be plotted")
+
     gene=data.frame(str_split_fixed(str_split_fixed(gtf$V9[which(gtf$V3=="gene")],";",2)[,1],":",2)[,2])
     gene$chr=gtf$V1[which(gtf$V3=="gene")]
     gene$BP=(gtf$V4[which(gtf$V3=="gene")]+gtf$V5[which(gtf$V3=="gene")])/2
@@ -168,29 +179,40 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
       }
     } 
   }else{
-    gene=read.csv(gtf,sep="\t",header=F)
+    suppressMessages(library(stringr))
+    system(paste("/usr/bin/python3 code/gff_format.py",gtf,paste0(inter,"qtlgff.gff3")))
+    gtf=data.frame(fread(paste0(inter,"qtlgff.gff3"),fill=T))
+    message("As you provided gff or gff like file, cis-trans QTL plot will be plotted")
+    if(sum(gtf$V3=="gene")>1){
+      gene=data.frame(str_split_fixed(str_split_fixed(gtf$V9[which(gtf$V3=="gene")],";",2)[,1],":",2)[,2])
+      gene$chr=gtf$V1[which(gtf$V3=="gene")]
+      gene$BP=(gtf$V4[which(gtf$V3=="gene")]+gtf$V5[which(gtf$V3=="gene")])/2
+    }else{
+      gene=gtf$V9
+      gene$chr=gtf$V1
+      gene$BP=(gtf$V4+gtf$V5)/2
+    }
+    
+    
+    names(gene)[1]="Probe"
+    row.names(gene)=gene$Probe
     chrlen=aggregate(BP~chr,data=gene,FUN=max)
-    chrlen=aggregate(BP~chr,data=gene,FUN=max)
+    chrlen=chrlen[grep("[0-9]+",chrlen[,1]),]
     chrlen[,1]=as.character(chrlen[,1])
     chrlen[,2]=as.numeric(chrlen[,2])
-    
-    ##add a extend length to chr len, making the plot more beautiful
-    chrlen[,2]=chrlen[,2]+sum(chrlen[,2])*0.02
-    ##convert chr position to genomic position
-    #get chr postion
-    for(i in seq(nrow(chrlen),2)){
-      chrlen$BP[i]=sum(chrlen$BP[1:(i-1)])
+    if(sum(diff(chrlen[,2])>0)!=(nrow(chrlen)-1)){
+      for(i in chrlen[,1]){
+        if(i!=1){
+          gene$BP[gene$chr==i]=gene$BP[gene$chr==i]+sum(chrlen[1:(as.numeric(i)-1),2])
+        }      
+      }
     }
-    chrlen$BP[1]=0
-    for(i in chrlen$chr){
-      gene$BP[gene$chr==i]=gene$BP[gene$chr==i]+chrlen[chrlen[,1]==i,2]
-    }  
   }
   chr_mean=aggregate(BP~chr,data=gene,mean)
   chr_mean=chr_mean[chr_mean[,1]%in%unique(vcf_data[,1]),2]
   #chr_mean=chr_mean+max(chrlen$BP)
   
-  print("Plot result")
+  
   all_qtl=as.data.frame(all_qtl)
   gene_pos=gene[as.character(all_qtl[,2]),3]
   row.names(vcf_save)=vcf_save[,3]
@@ -210,6 +232,7 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   } 
   snp_pos=snp_pos[,2]
   ##plot result
+  message("Plotting cis-trans QTL plot")
   pdf(paste0(out,"cis-trans_plot.pdf"),width=10,height=10)
   plot(snp_pos,gene_pos,
        frame.plot=F,pch=20,xaxt="n",yaxt="n",ylab="Gene position",xlab="QTL position",col="skyblue")
@@ -224,6 +247,7 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   axis(2,chr_mean,unique(vcf_data[,1]),las=1,cex.axis=1)
   dev.off()
 
+  message("Plotting QTL occurrence numbe plot")
   histdata=hist(snp_pos,breaks=seq(0,max(snp_pos,na.rm=T)+5e4,5e4))
   png(paste0(out,"QTL_times.png"),width=10,height=10,unit="in",res=600)
   par(mar = c(5, 5, 5, 5))
@@ -286,12 +310,15 @@ omicQTL_fun=function(omic,type,gtf,vcf,norm,out,threshold){
   #     frame.plot=F,pch=20,xaxt="n",ylab=expression("-Log"["10"]*"(QTL times)"),xlab="QTL position")
   #axis(1,chr_mean,unique(vcf_data[,1]),las=1,cex.axis=1)
   #dev.off()
+  }else{
+    message("As you don't provide a gff or gff like file, only output the qtl summary infomation")
+  }
 }
 
 
 # Code --------------------------------------------------------------------
 source("code/All_basic_function.R")
-library(parallel)
+suppressMessages(library(parallel))
 inter="inter_result/"
 args <- commandArgs(TRUE)
 omic=args[1]
@@ -300,12 +327,14 @@ type=args[2]
 #if type!=Expression gtf file must be a tab delimtated txt file with 3 colums 
 #as probe name(same as the omic head name), chr, pos in chr or in genome. Can also be a empty file
 gtf=args[3]
+
 vcf=args[4]
 inter="inter_result/"
 if(length(grep(".gz",vcf))==1){
   system(paste("gunzip -c",vcf, paste0("> ",inter,"vcf_qtl.vcf")))
   vcf=paste0(inter,"vcf_qtl.vcf")
 }
+message("Converting VCF format to MatrixEQtl format")
 plink="../../home/software/plink"
 system(paste0(plink," --vcf ",vcf," --recodeA --out ",paste0(inter,"vcf_qtl2")))
 system(paste0('cat ',paste0(inter,'vcf_qtl2.raw'),' | cut -d" " -f2,7- |',"sed 's/_[A-Z]//g' > ",paste0(inter,'snpmatrix.txt')))
@@ -318,4 +347,6 @@ out=args[7]
 write.table(args,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
 
 omicQTL_fun(omic=omic,type=type,gtf=gtf,vcf=vcf,norm=norm,out=out,threshold=threshold)
+#tryCatch({omicQTL_fun(omic=omic,type=type,gtf=gtf,vcf=vcf,norm=norm,out=out,threshold=threshold)}, warning = function(w){message("")})
+
 #data_convert_fun(vcf)

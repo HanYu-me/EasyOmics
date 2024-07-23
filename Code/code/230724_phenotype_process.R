@@ -114,16 +114,17 @@ genetic_data_fun=function(phe,vcf,name="",out){
   gcta="../../home/software/gcta-1.94.1-linux-kernel-3-x86_64/gcta-1.94.1"
 
   ##estimate h2 vp va
+  message("Estimating the kinship h2 of each trait")
   cmd_grm=paste(gcta,"--bfile",paste0(inter,"bfile"),"--make-grm  --thread-num 10 --out",paste0(inter,"grm"))
   system(cmd_grm)
   summ=data.frame(va=1,vp=1,h2=1)[-1,]
-  for(i in 1:(ncol(phe_data)-2)){
-    print(i)
+  for(i in 1:(ncol(phe_data)-2)){    
     cmd_h2=paste(gcta,"--reml","--grm",paste0(inter,"grm"),"--pheno",phe,"--mpheno",i,"--out",paste0(inter,"h2_",i))
     system(cmd_h2)
-    h2=data.frame(fread(paste0(inter,"h2_",i,".hsq")))
+    h2=data.frame(fread(paste0(inter,"h2_",i,".hsq"),fill=T))
     h2=h2[c(1,3,4),2]
     summ[i,]=h2
+    message(paste0("Trait ",i," estimated"))
   }
   write.table(summ,file="info.txt",append=T,row.names = F,col.names = F,quote=F) 
   cols=colorRampPalette(brewer.pal(12, 'Set3'))(length(3:ncol(phe_data)))
@@ -139,13 +140,24 @@ genetic_data_fun=function(phe,vcf,name="",out){
   barplot(summ$h2,names=names(phe_data)[3:ncol(phe_data)],col=cols,ylab="Kinship heritability",ylim=c(0,1))
   write.table("what",file="info.txt",append=T,row.names = F,col.names = F,quote=F) 
   dev.off()
+  pdf(file=paste0(out,name,"phenotype_summary.pdf"),width=kk*0.6,height=13*0.6)
+  par(mfrow=c(4,1))
+  par(mar=c(3,5,3,1))
+  boxplot(phe_data[,3:ncol(phe_data)],col=cols,frame.plot=F,ylab="Phenotype value")
+  barplot(summ$vp,names=names(phe_data)[3:ncol(phe_data)],col=cols,ylab="Phenotypic variance")
+  barplot(summ$va,names=names(phe_data)[3:ncol(phe_data)],col=cols,ylab="Additive variance")
+  barplot(summ$h2,names=names(phe_data)[3:ncol(phe_data)],col=cols,ylab="Kinship heritability",ylim=c(0,1))
+  write.table("what",file="info.txt",append=T,row.names = F,col.names = F,quote=F) 
+  dev.off()
   row.names(summ)=names(phe_data)[3:ncol(phe_data)]
   if(name=="Plasticity_"){
     write.table(summ,file=paste0(out,"Phe_Pla_info.txt"),quote = F,col.names = T,row.names = T)  
   }else{
     write.table(summ,file=paste0(out,"Phe_info.txt"),quote = F,col.names = T,row.names = T)  
   }
+  message("The genetic information was saved in Phe_info.txt")
   
+  message("The summary of traits was saved in Rawtra_phenotype_summary.pdf")
   ##phe cor
   phe_cor=data.frame(matrix(nrow=length(3:ncol(phe_data)),ncol=length(3:ncol(phe_data))))
   for(i in 3:ncol(phe_data)){
@@ -161,12 +173,16 @@ genetic_data_fun=function(phe,vcf,name="",out){
   pheatmap(phe_cor,cluster_rows = F,cluster_cols = F,na_col = "white",
            border_color = NA)
   dev.off()
+  pdf(file=paste0(out,name,"phenotype_cor.pdf"),width=11.5*0.6,height=10*0.6)
+  pheatmap(phe_cor,cluster_rows = F,cluster_cols = F,na_col = "white",
+           border_color = NA)
+  dev.off()
   if(name=="Plasticity_"){
     write.table(phe_cor,file=paste0(out,"Phe_Pla_cor.txt"),quote = F,col.names = T,row.names = T)  
   }else{
     write.table(phe_cor,file=paste0(out,"Phe_cor.txt"),quote = F,col.names = T,row.names = T)  
   }
-  
+  message("The correlation between each traits was saved in Phe_cor.txt and Rawtra_phenotype_cor.pdf")
   # ##genetic cor
   # for(i in 3:ncol(phe_data)){
   #   for(j in i:ncol(phe_data)){
@@ -206,12 +222,12 @@ c.z.hglm <- function(kin){
 }
 
 # Code --------------------------------------------------------------------
-library(lme4)
-library(tidyr)
-library(data.table)
-library(pheatmap)
-library(png)
-library(RColorBrewer)
+suppressMessages(library(lme4))
+suppressMessages(library(tidyr))
+suppressMessages(library(data.table))
+suppressMessages(library(pheatmap))
+suppressMessages(library(png))
+suppressMessages(library(RColorBrewer))
 #library(devtools)
 #install_github("lian0090/FW",force=T)
 #library(FW)
@@ -232,50 +248,64 @@ if(type=="Mutli_Environments"){
   phe_data=cbind.data.frame(phe_data,op)
   write.table(phe_data,file=paste0(out,"precessed_phe.txt"),quote = F,col.names = T,row.names = F)
   genetic_data_fun(phe=paste0(out,"precessed_phe.txt"),vcf=vcf,name="Plasticity_",out=out)
-}else if(type=="Multli_Traits"){
-  print(12)
+}else if(type=="Multi_Traits"){
   genetic_data_fun(phe=phe,vcf=vcf,name="Rawtra_",out=out)
 }else if( type=="Single_Trait"){
   phe_data=data.frame(fread(phe))
   inter="inter_result/"
   gcta="../../home/software/gcta-1.94.1-linux-kernel-3-x86_64/gcta-1.94.1"
   ##estimate h2
-  cmd_grm=paste(gcta,"--bfile",paste0(inter,"bfile"),"--make-grm-gz  --thread-num 10 --out",paste0(inter,"grm"))
+  message("Performing PCA analysis with genetic data")
+  cmd_grm=paste(gcta,"--bfile",paste0(inter,"bfile"),"--make-grm  --thread-num 10 --out",paste0(inter,"grm"))
   system(cmd_grm)
+  cmd_pca=paste(gcta,"--grm", paste0(inter,"grm"),"--pca 2 --out",paste0(inter,"pca_single"))
+  system(cmd_pca)
+  message("Estimated the kinship h2 of the single trait")
   cmd_h2=paste(gcta,"--reml","--grm",paste0(inter,"grm"),"--pheno",phe,"--mpheno",1,"--out",paste0(out,"h2_single_",1))
   system(cmd_h2)
-  ##load grm
-  if(file.exists(paste0(inter,"grm",".grm"))){
-          system(paste("rm ",paste0(inter,"grm",".grm")))
-  }
-  system(paste("gunzip ",paste0(inter,"grm",".grm.gz")))
-  grmfile=data.frame(fread(paste0(inter,"grm",".grm")),stringsAsFactors = F)
-  grm_data=matrix(ncol=max(grmfile[,1]),nrow=max(grmfile[,1]))
-  for(i in 1:nrow(grmfile)){
-    a=as.numeric(grmfile[i,1:4])
-    grm_data[a[1],a[2]]=a[4] 
-  }
-  grm_data[upper.tri(grm_data)] <- t(grm_data)[upper.tri(grm_data)]
-  Z=c.z.hglm(grm_data)
-  pca <- prcomp(Z)
-  pc1=pca$x[,1]
-  pc2=pca$x[,2]
-  explainability <- round(summary(pca)$importance[2, 1:2],2)
+  
+  ##load pca
+  pca=data.frame(fread("inter_result/pca_single.eigenvec"))
+  eig=data.frame(fread("inter_result/pca_single.eigenval"))
+
+  pc1=pca[,3]
+  pc2=pca[,4]
+  explainability=c(eig[1:2,1])
   
   if(sum(phe_data[,3]%in%c(1,0,-9))!=nrow(phe_data)){
+    message("This single trait is a qauantitative trait")
     pdf(file=paste0(out,"Single_Trait_result.pdf"),width=15*0.6,height=7*0.6)
     par(mfrow=c(1,2))
     plot(density(phe_data[,3],na.rm=T),frame.plot=F,main="Phenotype distribution",lwd=1.5,col="skyblue")
-    #text(x=phe_data[,3],y=rep(0,nrow(phe_data)),phe_data[,2], srt=90,cex=0.8)
   }else{
+    message("This single trait is a qualitative trait")
     pdf(file=paste0(out,"Single_Trait_result.pdf"),width=8*0.6,height=7*0.6)
   }
   plot(pc1,pc2,col="skyblue",frame=F,
     xlab=paste("PC1 ",explainability[1]),ylab=paste("PC2 ",explainability[2]),
     main="Genetic structure",pch=20)
-  #text(x=pc1,y=pc2,phe_data[,2],cex=0.8)
   dev.off()
+
+  if(sum(phe_data[,3]%in%c(1,0,-9))!=nrow(phe_data)){
+    png(file=paste0(out,"Single_Trait_result.png"),width=15*0.6,height=7*0.6,units="in",res=600)
+    par(mfrow=c(1,2))
+    plot(density(phe_data[,3],na.rm=T),frame.plot=F,main="Phenotype distribution",lwd=1.5,col="skyblue")
+  }else{
+    png(file=paste0(out,"Single_Trait_result.png"),width=8*0.6,height=7*0.6,units="in",res=600)
+  }
+  plot(pc1,pc2,col="skyblue",frame=F,
+    xlab=paste("PC1 ",explainability[1]),ylab=paste("PC2 ",explainability[2]),
+    main="Genetic structure",pch=20)
+  dev.off()
+
+  h2=data.frame(fread(paste0(out,"h2_single_1.hsq"),fill=T))
+  se=h2[4,3]
+  h2=h2[4,2]
+  message(paste0("This trait with a h2 ",h2," (se=",se,")"))
 }
 
 
+
+
 #phe="data/input/phenotype/phe.txt"
+

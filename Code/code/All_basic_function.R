@@ -1,4 +1,4 @@
-library(data.table)
+suppressMessages(library(data.table))
 #library(GenABEL)
 
 
@@ -50,22 +50,30 @@ convert.vcf <- function(vcf.file, which="GT", map=FALSE, snp.pos=FALSE, genotype
   }
 }
 
-
+options (warn = -1)
 # Display the manhattan result --------------------------------------------
 ##This function was used to illustrate the single trait, cojo result, and multi-trait result
 plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),threshold=5e-8,corrected=T){
+  if(!file.exists(result)){
+    message("No significant MR result")
+    message("Maybe the over setted threshold")
+    message("Please Check the .log file")
+  }
   data=data.frame(fread(result))
-  
+  message("Plotting result")
   ##check the file format to continue right downstream analysis
   if(ncol(data)==10){
     #For single trait and multi-trait
     names(data)=c("CHR","SNP","POS","A1","A2","AF1","BETA","SE","P","N")  
-  }else if(ncol(data)==13){
+  }else if(ncol(data)!=10){
+    message("loading cojo result")
     #For cojo
     data=data[,c(1,2,3,4,4,5,11,12,13,9)]
     #Note, the A2 col isn't the real A2, because the cojo result file don't contain this cols
     names(data)=c("CHR","SNP","POS","A1","A2","AF1","BETA","SE","P","N")
   }
+  data=na.omit(data)  
+  data[data$P<=1e-50,"P"]=1e-50
   chr_info=aggregate(POS~CHR,data,max)  
   if(sum(diff(chr_info[,2])>0)!=(nrow(chr_info)-1)){
     for(i in chr_info[,1]){
@@ -87,7 +95,7 @@ plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),th
     names(cols)=chr_mean$CHR[order(chr_mean$POS)]
     cols=cols[data$CHR]
   }
-  
+  message("Plotting manhattan")
   pdf(file=paste0(out,"manhattan.pdf"),width=12,height=6)
   plot(x=data[,3],y=-log10(as.numeric(data[,9])),
        cex=1,pch=20,col=cols,frame.plot=F,xaxt="n",yaxt="n",
@@ -97,18 +105,18 @@ plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),th
   if(threshold=="Bonferroni"){
      #threshold can calculated
     threshold=0.05/nrow(data)
+
+    message(paste0("Assigning threshold as ",-log10(threshold)," based on Bonferroni"))
     abline(h=-log10(threshold),col="red",lty="dashed")
   }else{
     #threshold can be setted
     threshold=as.numeric(threshold)
     abline(h=-log10(as.numeric(threshold)),col="red",lty="dashed")
   }
-  print("threshold")
-  print(threshold)
+  
   ##show top loci(grouped by distance) and save the loci passed the threshold.
   snps=snp_finder(data,threshold)
-  print("threshold")
-  print(threshold)
+  
   #save the snp for locuszoom analysis and SMR
   if(length(snps)==0){
     write.table("No siginificant SNPs",file=paste0(out,"top_snps.txt"),
@@ -126,7 +134,7 @@ plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),th
     }
   }
   axis(1,chr_mean,c(unique(data$CHR)),las=1,cex.axis=1)
-  axis(2,seq(0,max(-log10(data[,9]),na.rm=T),2),seq(0,max(-log10(data[,9]),na.rm=T),2),las=1,cex.axis=1)
+  axis(2,seq(0,max(-log10(as.numeric(data[,9])),na.rm=T),2),seq(0,max(-log10(data[,9]),na.rm=T),2),las=1,cex.axis=1)
   dev.off()
 
   png(file=paste0(out,"manhattan.png"),width=12,height=6,units="in",res=600)
@@ -144,15 +152,16 @@ plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),th
     abline(h=-log10(as.numeric(threshold)),col="red",lty="dashed")
   }
   
-  if(show_peakloci==T){
+  if(show_peakloci==T&length(snps)!=0){
     points(top_data$POS,-log10(top_data$P),cex=1,pch=17,col="red")
     text(top_data$POS-0.04*max(data$POS,na.rm=T),-log10(top_data$P),top_data$SNP,cex=0.8)
   }
   
   axis(1,chr_mean,c(unique(data$CHR)),las=1,cex.axis=1)
-  axis(2,seq(0,max(-log10(data[,9]),na.rm=T),2),seq(0,max(-log10(data[,9]),na.rm=T),2),las=1,cex.axis=1)
+  axis(2,seq(0,max(-log10(as.numeric(data[,9])),na.rm=T),2),seq(0,max(-log10(data[,9]),na.rm=T),2),las=1,cex.axis=1)
   dev.off()
   
+  message("Plotting QQ-plot")
   ###QQplot
   pdf(file=paste0(out,"qqplot.pdf"),width=8,height = 8)
   lambda=qqplot_fun(data$P,plot=T,frame.plot=F,pch=20,col="skyblue")
@@ -163,11 +172,14 @@ plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),th
   
   ### corrected manhattan
   if(lambda$estimate>1.1 & corrected==T){
+    message("The inflation factor is bigger than 1.1")
+    message("Performing p-value correction")
     data$P=pchisq(qchisq(data$P,df=1,lower.tail=F)/lambda$estimate,df=1,lower.tail = F)
     write.table(data,file=paste0(out,"mlm_corrected.mlma"),
                 quote = F,col.names = T,row.names = F)
     ##The below code are same as above manhattan. 
     ##If changed the above code,can directely copy to here, except the filename.
+    message("Plotting corrected manhattan ")
     pdf(file=paste0(out,"manhattan_corrected.pdf"),width=12,height=6)
     plot(x=data[,3],y=-log10(data[,9]),
          cex=1,pch=20,col=cols,frame.plot=F,xaxt="n",yaxt="n",
@@ -201,7 +213,7 @@ plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),th
       }
     }
     axis(1,chr_mean,c("1","2","3","4","5"),las=1,cex.axis=1)
-    axis(2,seq(0,max(-log10(data[,9]),na.rm=T),2),seq(0,max(-log10(data[,9]),na.rm=T),2),las=1,cex.axis=1)
+    axis(2,seq(0,max(-log10(as.numeric(data[,9])),na.rm=T),2),seq(0,max(-log10(data[,9]),na.rm=T),2),las=1,cex.axis=1)
     dev.off()
 
     png(file=paste0(out,"manhattan_corrected.png"),width=12,height=6,units="in",res=600)
@@ -220,13 +232,13 @@ plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),th
     }
     ##show top loci(grouped by distance) and save the loci passed the threshold.
     
-    if(show_peakloci==T){
+    if(show_peakloci==T&length(snps)!=0){
       points(top_data$POS,-log10(top_data$P),cex=1,pch=17,col="red")
       text(top_data$POS-0.06*max(data$POS,na.rm=T),-log10(top_data$P),top_data$SNP,cex=0.8)
     }
     
     axis(1,chr_mean,c("1","2","3","4","5"),las=1,cex.axis=1)
-    axis(2,seq(0,max(-log10(data[,9]),na.rm=T),2),seq(0,max(-log10(data[,9]),na.rm=T),2),las=1,cex.axis=1)
+    axis(2,seq(0,max(-log10(as.numeric(data[,9])),na.rm=T),2),seq(0,max(-log10(data[,9]),na.rm=T),2),las=1,cex.axis=1)
     dev.off()
   }
 }
@@ -234,15 +246,19 @@ plot_fun=function(result,out,show_peakloci=T,color_manh=c("tomato","skyblue"),th
 
 
 snp_finder=function(gctadata,threshold){
+  message("Finding leading SNP of GWAS peak")
   snps=c()
   gctadata=na.omit(gctadata)
   window <- seq(0,max(gctadata$POS),5e04)
   gctadata=gctadata[gctadata$P<threshold,]
   if(nrow(gctadata)==0){
+    message("No SNP passed the threshold")
     return(c())
   }else if(nrow(gctadata)==1){
+    message("Finished leading SNP finding")
     return(gctadata$SNP)
   }else{
+    message("Finished leading SNP finding")
     snp=gctadata$SNP
     chr=gctadata$CHR
     pos=gctadata$POS

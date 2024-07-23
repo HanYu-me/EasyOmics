@@ -1,5 +1,5 @@
 
-library(stringr)
+suppressMessages(library(stringr))
 # Functions ---------------------------------------------------------------
 
 ###Using the GCTA to perform the gmlm GWAs
@@ -24,6 +24,7 @@ GWA_fun=function(phe,out,phenum=1,name=""){
   #select phe
   
   #mlm use this model
+  message("Performing GWAS analysis with mixed linear model")
   cmd_mlm=paste(gcta,"--mlma","--bfile",paste0(inter,"bfile"), "--grm",paste0(inter,"grm"),"--pheno",phe,"--mpheno",phenum,"--thread-num 10","--out", paste0(out,name,"mlm"))
   system(cmd_mlm)
   
@@ -33,7 +34,7 @@ GWA_fun=function(phe,out,phenum=1,name=""){
   data$N=sum(!is.na(phedata[,3]))
   write.table(data,file=paste0(out,name,"mlm.mlma"),
               quote = F,col.names = T,row.names = F)
-  print("mlm finshed")
+  message(paste0("The GWAS result was saved in ",name,"mlm.mlma"))
 }
 
 
@@ -55,8 +56,8 @@ write.table(args,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
 
 data_convert_fun(vcf)
 GWA_fun(phe,out=out,phenum=phenum,name)
-print("ploting")
+
 plot_fun(result=paste0(out,name,"mlm.mlma"),out=paste0(out,name),threshold=threshold,show_peakloci=showtop,color_manh=paste0("#",str_split(color,"_")[[1]]))
-print("plot finished")
+
 
 

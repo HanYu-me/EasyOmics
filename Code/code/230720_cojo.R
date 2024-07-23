@@ -1,9 +1,10 @@
-library(stringr)
+suppressMessages(library(stringr))
 
 # Function ----------------------------------------------------------------
 ###This cojo was just for single trait
 cojo_fun=function(mlm,cojop,out){
   inter="inter_result/"
+  message("Performing COJO analysis")
   gcta=" ../../home/software/gcta-1.94.1-linux-kernel-3-x86_64/gcta-1.94.1"
   data=data.frame(fread(mlm))
   data=data[,c(2,4,5,6,7,8,9,10)]
@@ -17,6 +18,7 @@ cojo_fun=function(mlm,cojop,out){
                  "--cojo-slct","--cojo-p",cojop,"--out",paste0(out,"GWAs_cojoed"))
   write.table(cmd_cojo,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
   system(cmd_cojo)
+  message("The COJO result was saved in GWAs_cojoed.cma.cojo")
 }
 
 

@@ -2,7 +2,7 @@
 
 # Function ----------------------------------------------------------------
 SMR_single_fun=function(exposure,outcome,out,threshold){
-  library(data.table)
+  suppressMessages(library(data.table))
   inter="inter_result/"
   bfile=paste0(inter,"bfile")
   
@@ -10,6 +10,7 @@ SMR_single_fun=function(exposure,outcome,out,threshold){
   gcta=" ../../home/software/gcta-1.94.1-linux-kernel-3-x86_64/gcta-1.94.1"
   
   ##data format check and manipulation
+  message("Converting mlm file format to GSMR")
   data1=data.table(fread(exposure))
   data2=data.table(fread(outcome))
   data1=data1[,c(2,4,5,6,7,8,9,10)]
@@ -32,10 +33,11 @@ SMR_single_fun=function(exposure,outcome,out,threshold){
   }else{
     threshold=as.numeric(threshold)
   }
-  
+  system("Performing two trait MR")
   cmd_gsmr=paste(gcta,"--bfile",bfile,"--gsmr-file",paste0(inter,"exposure.txt"),paste0(inter,"outcome.txt"),
                  "--gsmr-direction",0,"--effect-plot","--gwas-thresh",threshold,"--out",paste0(out,"gsmr_result"))
   system(cmd_gsmr)
+  message("The MR result was saved in gsmr_result.gsmr")
 }
 
 
@@ -56,12 +58,18 @@ SMR_single_fun(exposure=exposure,outcome=outcome,out=out,threshold=threshold)
 
 
 if(file.exists(paste0(out,"gsmr_result.eff_plot.gz"))){  
+  message("There is a siginicant result")
+  message("Plotting the effect point plot")
   gsmr_data=read_gsmr_data(paste0(out,"gsmr_result.eff_plot.gz"))
   #gsmr_summary(gsmr_data)
   png(paste0(out,"gsmr_result.png"),width=1200,height = 900)
   par(mar = c(5, 5, 5, 5))
   plot_gsmr_effect(gsmr_data, "exp", "out", colors()[75])          
   dev.off()
+}else{
+  message("No significant MR result")
+  message("Maybe the over setted threshold")
+  message("Please Check the .log file")
 }
 
 

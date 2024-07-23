@@ -6,12 +6,17 @@ A graphical interface for population-scale omics data association, integration a
 | | |
 | --- | --- |
 | Author  | Yu Han ([yuhan](https://www.researchgate.net/profile/Yu-Han-165)) |
-| Email   | <yu_han@stu.scu.edu.cn> |
+| Email 1   | <yu_han@stu.scu.edu.cn> |
+| Email 2   | <yuhan2000729@gmail.com> |
+| Email 3   | <zanyanjun@caas.cn> |
+
 
 
 ## Description
-EasyOmics is an R Shiny application with a graphic user interface (GUI) application that integrates the Omic data for GWAS analysis. 
-And it is a user-friendly application that allows users to perform association analysis locally without any coding.
+EasyOmics is an R Shiny application with a graphic user interface (GUI) application that integrates the Omic data for GWAS analysis. And it is a user-friendly application that allows users to perform association analysis locally without any coding.
+
+Moreover, it simplifies data compatibility issues across various analysis tools, requiring only VCF, GFF, and phenotype TXT files.
+
 
 |Function|Description|
 | ----------- | ----------- |
@@ -30,9 +35,10 @@ And it is a user-friendly application that allows users to perform association a
 ### Docker installation
 Docker is an open-source project developed in Go language, which could package software and its dependencies into images for quick deployment environment.
 
-For Windows/Mac OS users, please visit Docker's official website to download the Docker Desktop application: https://docs.docker.com/get-docker/
+For users, please visit Docker's official website to download the Docker Desktop application: https://docs.docker.com/get-docker/
 
-Note, Windows users need to refer to Microsoft's documentation to download and set up the WSL2 subsystem after installed docker: https://docs.microsoft.com/en-us/windows/wsl/install
+Note for Windows users, WSL2, the dependency of docker, will be automatically installed during docker decktop install. If error occurs, users need to refer to Microsoft's documentation to download and set up the WSL2 subsystem manually: https://docs.microsoft.com/en-us/windows/wsl/install
+
 ### EasyOmics installation
 After installing docker users need to follow these steps:
 - Open the Docker Desktop application.

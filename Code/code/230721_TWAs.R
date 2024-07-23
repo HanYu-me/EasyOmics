@@ -1,4 +1,4 @@
-library(stringr)
+suppressMessages(library(stringr))
 # Function ----------------------------------------------------------------
 TWA_fun=function(exp,phe,out){
   inter="inter_result/"
@@ -6,22 +6,26 @@ TWA_fun=function(exp,phe,out){
   #make bod expression file
   cmd_b=paste(osca,"--efile",exp,"--gene-expression","--make-bod","--no-fid","--out",paste0(inter,"bod"))
   write.table(cmd_b,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
+  message("Estimating Omic relatedness matrix")
   system(cmd_b)
   
   #moa TWA
   cmd_moa=paste(osca,"--moa-exact","--befile",paste0(inter,"bod"),"--reml-maxit",200,"--thread-num 10 --pheno",phe,"--out",paste0(out,"moa"))
   write.table(cmd_moa,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
+  message("Performing OmicWAS analysis")
   system(cmd_moa)
+  message("The OmicWAS result was saved in moa.moa")
 }
 plot_twa_fun=function(result,out,gtf,color_manh=c("tomato","skyblue"),threshold=5e-8,corrected=T,show_peakloci=T){
   inter="inter_result/"
+  message("Plotting Omics manhattan ")
   write.table(threshold,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
   if(threshold!="Bonferroni"){
     threshold=as.numeric(threshold)
     write.table(threshold,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
   }
   write.table(threshold,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
-  library(data.table)
+  suppressMessages(library(data.table))
   ##get gene position
   ##Must set the input data type of chr as numeic(1,2,3...)
   system(paste("/usr/bin/python3 code/gff_format.py",gtf,paste0(inter,"twasgff.gff3")))
@@ -49,8 +53,8 @@ plot_twa_fun=function(result,out,gtf,color_manh=c("tomato","skyblue"),threshold=
   
   
   data=data.frame(fread(result))
-  print("this row may make some error in using new data, please check")
-  data[,2]=sub("_10C","",data[,2])
+  #print("this row may make some error in using new data, please check")
+  #data[,2]=sub("_10C","",data[,2])
   data[,1]=gene[data[,2],2]
   data[,3]=gene[data[,2],3]
   data=data[!is.na(data[,3]),]
@@ -68,12 +72,12 @@ plot_twa_fun=function(result,out,gtf,color_manh=c("tomato","skyblue"),threshold=
     cols=cols[data$CHR]
   }
 
-  pdf(file=paste0(out,"TWAs_manhattan.pdf"),width=15,height=10)
+  pdf(file=paste0(out,"OmicWAs_manhattan.pdf"),width=15,height=10)
   plot(x=data[,3],y=-log10(data[,8]),
        cex=1,pch=20,col=cols,frame.plot=F,xaxt="n",yaxt="n",
        xlab="Chromosome",ylab=expression("-Log"["10"]*"(P)"))
   chr_mean=aggregate(POS~CHR,data=data,mean)[,2]
-  axis(1,chr_mean,c(unique(data$CHR)),las=1,cex.axis=1)
+  axis(1,chr_mean,aggregate(POS~CHR,data=data,mean)[,1],las=1,cex.axis=1)
   axis(2,seq(0,max(-log10(data$P),na.rm=T),2),seq(0,max(-log10(data$P),na.rm=T),2),las=1,cex.axis=1)
   write.table(threshold,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
   ##show the threshold
@@ -92,6 +96,7 @@ plot_twa_fun=function(result,out,gtf,color_manh=c("tomato","skyblue"),threshold=
   ##show top genes
   top_data=data[data$P<threshold,c(1:3,6:8)]
   write.table(threshold,file="info.txt",append=T,row.names = F,col.names = F,quote=F)
+  message("Finding siginificant genes")
   if(nrow(top_data)>0){
     write.table(top_data,file=paste0(out,"top_genes.txt"),
                 quote = F,col.names = T,row.names = F)
@@ -100,17 +105,18 @@ plot_twa_fun=function(result,out,gtf,color_manh=c("tomato","skyblue"),threshold=
       text(top_data$POS-0.05*max(data$POS,na.rm=T),-log10(top_data$P),top_data$GENE,cex=0.8)
     }
   }else{
+    message("No gene passed the threshold")
     write.table("No siginificant genes",file=paste0(out,"top_genes.txt"),
                 quote = F,col.names = T,row.names = F)
   }
   dev.off()
 
   
-  png(file=paste0(out,"TWAs_manhattan.png"),width=15,height=10,units = "in",res=600)
+  png(file=paste0(out,"OmicWAs_manhattan.png"),width=15,height=10,units = "in",res=600)
   plot(x=data[,3],y=-log10(data[,8]),
        cex=1,pch=20,col=cols,frame.plot=F,xaxt="n",yaxt="n",
        xlab="Chromosome",ylab=expression("-Log"["10"]*"(P)"))
-  axis(1,chr_mean,c(unique(data$CHR)),las=1,cex.axis=1)
+  axis(1,chr_mean,aggregate(POS~CHR,data=data,mean)[,1],las=1,cex.axis=1)
   axis(2,seq(0,max(-log10(data$P),na.rm=T),2),seq(0,max(-log10(data$P),na.rm=T),2),las=1,cex.axis=1)
   ##show the threshold
   if(threshold==5e-8){

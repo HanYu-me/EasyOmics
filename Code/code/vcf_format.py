@@ -16,13 +16,14 @@ while a:
         #a=a+"\n"
     
     if a[0]!= "#":
-        if "scaffold" in a:
-            a=f_in.readline()
-            continue
-        if "*" in a:
-            a=f_in.readline()
-            continue
-        
+        #if "scaffold" in a:
+        #    a=f_in.readline()
+        #    continue
+        #if "*" in a:
+        #    a=f_in.readline()
+        #    continue
+        a=a.replace("scaffold","")
+        a=a.replace("Scaffold","")
         a=a.replace("Chr","")
         a=a.replace("chr","")
         a=a.replace("Chromosome","")

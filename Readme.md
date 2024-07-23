@@ -10,38 +10,45 @@ A graphical interface for population-scale omics data association, integration a
 | Email 2   | <yuhan2000729@gmail.com> |
 | Email 3   | <zanyanjun@caas.cn> |
 
+## Videos
+ 
+ This video provides a guide through the installation process and each step of using EasyOmics.
+ 
+ Link:
 
 
-## Description
-EasyOmics is an R Shiny application with a graphic user interface (GUI) application that integrates the Omic data for GWAS analysis. And it is a user-friendly application that allows users to perform association analysis locally without any coding.
+## Introduction
+EasyOmics is an R Shiny application with a graphic user interface (GUI) application that integrates the Omic data for GWAS analysis. It is a user-friendly application that allows users to perform association analysis locally without any coding.
 
 Moreover, it simplifies data compatibility issues across various analysis tools, requiring only VCF, GFF, and phenotype TXT files.
-
 
 |Function|Description|
 | ----------- | ----------- |
 |[Data Matching](#1)|Preparing input files for subsequent analysis. |
 |[Phenotype Analysis](#2)|Providing critical insights into the input data characteristics and facilitates the detection of outlier values.|
 |[GWAS](#3)|Testing the significance of associations between each SNP and the phenotype using a linear mixed model.|
-|[COJO](#4)|Reanalysing results from the GWAS function and identify secondary association signals.|
+|[COJO](#4)|Fine mapping of GWAS result and identify secondary association signals.|
 |[Locus Zoom](#5)|Displaying the significance, linkage, and nearby genes of SNPs in specific chromosome regions.|
 |[Omic QTL](#6)|Employing linear models for association analysis of omics data and genotype data.|
 |[Two Traits MR](#7)|Exploring causal relationships between two traits.|
-|[SMR](#8)|Exploring causal relationships between trait and molecular trait.|
+|[SMR](#8)|Exploring causal relationships between trait and omic molecular trait.|
 |[OmicWAS](#9)|Testing the associations between omic data and complex traits.|
 
 ---
 ## Software Installation
 ### Docker installation
-Docker is an open-source project developed in Go language, which could package software and its dependencies into images for quick deployment environment.
+Docker is an open-source project developed in Go language, which could package software and its dependencies into images for a quick deployment environment.
 
 For users, please visit Docker's official website to download the Docker Desktop application: https://docs.docker.com/get-docker/
 
-Note for Windows users, WSL2, the dependency of docker, will be automatically installed during docker decktop install. If error occurs, users need to refer to Microsoft's documentation to download and set up the WSL2 subsystem manually: https://docs.microsoft.com/en-us/windows/wsl/install
+Notes:
+  - For Windows users, WSL2, the dependency of docker, will be automatically installed during Docker Desktop install. If an error occurs, users need to refer to Microsoft's documentation to download and set up the WSL2 subsystem manually: https://docs.microsoft.com/en-us/windows/wsl/install
+  - If your network can not access the Docker Desktop website, please contact us, and we will provide a download link of Netdisk.
 
 ### EasyOmics installation
 After installing docker users need to follow these steps:
 - Open the Docker Desktop application.
+- Skip sign up (Optional)
 - Search for yuhan2000 and pull (download) the image yuhan2000/gwas:latest
 
 <div align=center><img src="figures/image-13.png" width="450" /></div>
@@ -53,23 +60,23 @@ After installing docker users need to follow these steps:
 
 - Set the container parameters. 
   - Container name could be any character.
-  - Host port could be 0 or any other four digits.
+  - Host port could be 0 or any other four digits (eg. 3838).
   - Directory :
-    - <b>Host path is the local empty directory path to save analysis result. </b>
+    - <b>Host path is the local empty directory path to save analysis results. </b>
     - <b>Container path must be "/srv/shiny-server/Analysis_Result/" to mount the result of the container.</b>
   - Environment variables don't need setting.
 
 <div align=center><img src="figures/image-14.png" width="300" /></div>
 
-- Click to run button to finish the container create poecess.
-- Go to "Containers" page of docker decktop and run the created container.
-- Enter "localhost:Host port of container" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface. If "Host port" of container was set to 0, please check the port of the container.
-- When perform analysis, result will be automaticlly outputed into Host path.
-- The feedback and error of Easyomics and the invoked software are displayed in the logs bar of the Container during the analysis.
+- Click to run button to finish the container creation process.
+- Go to "Containers" page of Docker Desktop and run the created container.
+- Enter "localhost:Host port of container" (eg. localhost:3838) in the browser's address bar to enter the software interactive interface. If "Host port" of container was set to 0, please check the port of the container in the container panel.
+- When performing analysis, result will be automatically output into Host path.
+- The feedback and error of EasyOmics and the invoked software are displayed in the logs bar of the Container during the analysis.
 
 <div align=center><img src="figures/image17.png" width="450" /></div>
 
-- Click the stop button in the "Container" page to exit the software.
+- Click the stop button on the "Container" page to exit the software.
 ---
 ## Panel and workflow
 The sidebar contains a select list to choose the analysis function, a file upload control to upload files required for different analyses, a parameter control to adjust the parameters before analysis, and an action button to perform the analysis. The main area occupies most of the horizontal width in the application window and contains visualized outputs and feedback.
@@ -105,7 +112,7 @@ sample_10000_vcf: Vcf file containing 10,000 SNPs sampled from the raw data.
 ---
 ### <h3 id="1">Data Matching</h3>
 #### Input Files
-- Text files are split by "tab", containing at least three .columns: family code, individual code, and phenotypic value of the trait (supports multiple phenotypes).
+- Text files are split by "tab", containing at least three columns: family code, individual code, and phenotypic value of the trait (supports multiple phenotypes).
 ```txt
 family id FT16
 108 108 52.25
@@ -162,6 +169,11 @@ For single trait EasyOmics presents the phenotype distribution in a density plot
 
 - Result of invoked softwares.
 
+#### Significance of Critical Results
+- Heritability: High heritability indicates that a significant proportion of the variation in a specific trait within a population is due to genetic differences among individuals. This suggests that the trait is strongly influenced by genetic factors.
+- Outlier of phenotype: If the distribution of the phenotype is abnormal or disordered, some individuals may have phenotypic values that were erroneously collected, and these need to be identified as outliers. An outlier in phenotypic values can influence the association results disproportionately, potentially leading to false positives or negatives.
+- Outlier of genetic structure: Outlier often refers to an individual individual whose genetic background is substantially different from the rest of the study population.
+
 ---
 ### <h3 id="3">GWAS</h3>
 #### Input Files
@@ -209,6 +221,11 @@ Chr SNP bp A1 A2 Freq b se p N
 1 1:502 502 C T 0.342857 -0.134289 0.922746 0.884291 630
 ```
 - Result of invoked softwares.
+
+#### Significance of Critical Results
+- The p-value: p-value means the significance of association between genetic variation and phenotype. If some SNPs pass the threshold,  these SNPs are statistically significant association between the genetic variant and the trait.
+- The inflation factor: The inflation factor λ is typically calculated as the median of the observed chi-squared test statistics divided by the median of the theoretical chi-squared distribution under the null hypothesis. When λ is significantly greater than 1.1, suggests an overdispersion of test statistics, which may be due to population stratification, cryptic relatedness among samples, or other forms of systematic bias.
+
 ---
 ### <h3 id="4">COJO</h3>
 #### Input Files
@@ -220,6 +237,8 @@ Same as "GWAS".
 Utilizes GCTA software COJO function to remove significant SNPs in the "GWAs" analysis and analyze whether any SNPs are still significant.
 #### Output Results
 Same as "GWAS".
+#### Significance of Critical Results
+Same as "GWAS".
 
 ---
 ### <h3 id="5">Locus Zoom</h3>
@@ -230,8 +249,8 @@ Same as "GWAS".
 - The phenotype file used in "GWAs" analysis.
 
 #### Parameter
-- SNP ID：Select the ID of the SNP to display.
-- Region：Choose to display other SNPs in the vicinity of the selected SNP.
+- SNP ID: Select the ID of the SNP to display.
+- Region: Choose to display other SNPs in the vicinity of the selected SNP.
 
 #### Analysis Process
 The software uses LDBlockShow to calculate linkage disequilibrium between the selected SNP and other nearby SNPs, displaying this in conjunction with association analysis results and gene locations. 
@@ -246,7 +265,11 @@ It also analyzes and plots phenotypes of individuals with different genotypes of
 <div align=center><img src="figures/image-4.png" width="70%"/></div>
 
 - Result of invoked softwares.
- 
+
+#### Significance of Critical Results
+- Gene in selected region: Genes located in the selected zoom region are specifically annotated in the LocusZoom plot. The presence of these genes is crucial because it provides clues about potential biological pathways or mechanisms that might be influencing the trait of interest
+- LD in selected region: A region of high LD around a significant SNP suggests that these variants are inherited together frequently. Areas of low LD indicate that genetic linkage breaks down, which helps in narrowing down the possible regions where the causal variants might reside.
+
 ---
 ### <h3 id="6">Omic QTL</h3>
 #### Input Files
@@ -276,25 +299,11 @@ SNP gene beta t-stat p-value FDR
 1:19462886 AT1G52270 0.673281447249011 27.9516480473353 3.39978031137861e-111 8.28850472845873e-102
 1:19463170 AT1G52270 0.671582251314867 27.9031631086884 6.15721634281558e-111 1.20088034160951e-101
 ```
-- Frequency of SNPs located in different molecular traits.
-  
-```txt
-Prob freq
-AT1G52270 4
-AT1G23935 3
-AT1G12340 3
-AT2G05140 3
-```
-- Frequency of significant associated traits in each leading SNPs.
-  
-```txt
-QTL freq
-1:10021441 1
-1:10023611 1
-1:10024590 1
-1:10025607 1
-```
 - Result of invoked softwares.
+
+#### Significance of Critical Results
+- The p-value: Similar to GWAS, the p-value of SNPs means the significance of the association with some molecular phenotype. Only the association with p-value passed the threshold could be saved. 
+- The cis-trans QTLs: A cis-QTL represents a quantitative trait locus that is located near the genomic position of the omic trait it influences. This proximity often suggests a direct regulatory relationship. Conversely, a trans-QTL is identified as a QTL that is distal to the position of the omic trait, indicating an influence that is mediated through more complex genetic and molecular interactions.
 
 ---
 ### <h3 id="7">Two Traits MR</h3>
@@ -304,7 +313,7 @@ QTL freq
 - CF file all SNPs in file one and two.
 
 #### Parameter
-Threshold：Same as "GWAs."
+Threshold: Same as "GWAs."
 #### Analysis Process
 Uses GCTA software's Mendelian randomization function to analyze whether the instrumental variable SNP affects trait in file one through the trait in file two, thus determining the causal relationship between the two traits. 
 #### Output Results
@@ -313,6 +322,11 @@ Uses GCTA software's Mendelian randomization function to analyze whether the ins
 <div align=center><img src="figures/gsmr_result.png" width="50%"/></div>
 
 - Result of invoked softwares.
+
+#### Significance of Critical Results
+- Significant MR in p-value: After filtering SNPs p-value passed the threshold in the outcome and exposure, SNPs located in common region will be analysed.The significance is determined through the use of genetic variants as instrumental variables (IVs) to estimate the causal effect of the exposure on the outcome. If the p-value in result file passes the threshold, causal relationship is true.
+
+
 
 ---
 ### <h3 id="8">SMR</h3>
@@ -323,7 +337,7 @@ Uses GCTA software's Mendelian randomization function to analyze whether the ins
 - Consistent GFF3 file from "Omic QTL."
 
 #### Parameter
-Threshold：Same as "GWAs."
+Threshold: Same as "GWAs."
 #### Analysis Process
 Uses SMR software to analyze whether the instrumental variable SNP affects the trait through the molecular trait, conducting parallel analysis for each molecular trait. 
 #### Output Results
@@ -335,6 +349,9 @@ Uses SMR software to analyze whether the instrumental variable SNP affects the t
 
 - Result of invoked softwares.
 
+#### Significance of Critical Results
+- Significant MR in p-value: If the p-value from the SMR analysis passes the genome-wide significance threshold, and the p-value from the HEIDI (Heterogeneity In Dependent Instruments) test exceeds 0.05 in the results file, it supports the validity of the causal relationship.
+- 
 ---
 ### <h3 id="9">OmicWAS</h3>
 #### Input Files
@@ -369,4 +386,5 @@ NA	AT1G01050	-9	NA	NA	2.54477	1.49342	0.0883824
   
 ---
 
-
+#### Significance of Critical Results
+- The p-value: Similar to GWAS, the p-value indicated the association between omic molecular and phenotype.

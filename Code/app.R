@@ -556,7 +556,6 @@ server=function(input, output) {
       system("rm inter_result/*")
       message("---------------------Finished----------------------\n")
       }
-      
       # TWAs --------------------------------
       if(input$Function=="OmicWAs"){
          output$dynamic_output=renderUI({

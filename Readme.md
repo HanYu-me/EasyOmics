@@ -51,6 +51,8 @@ After installing Docker users need to follow these steps:
 - Skip sign up (Optional)
 - Search for yuhan2000 and pull (download) the image yuhan2000/gwas:latest
 
+<div align=center><img src="figures/image-13.png" width="450" /></div>
+
 If you cannot download the image because of some network problems:
 - download image form one of below links:
   - Figshare: https://doi.org/10.6084/m9.figshare.26317273.v1  
@@ -60,7 +62,6 @@ If you cannot download the image because of some network problems:
 - Enter command: docker load --input downloadpath/gwas.tar
 - Check image panel in Docker Desktop
 
-<div align=center><img src="figures/image-13.png" width="450" /></div>
 
 ### Start
 - Click to run button to create a container of downloaded image.

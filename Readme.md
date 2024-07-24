@@ -99,15 +99,15 @@ GWAs function can perform association analysis between genotype and phenotype an
 ### Example data
 Example data have been deposited in https://github.com/HanYu-me/EasyOmics/tree/main/examples
 
-phe_FT16: Flowering time of Arabidopsis thaliana at 16°C.
+phe_FT16.txt: Flowering time of Arabidopsis thaliana at 16°C.
 
-phe_10env: Flowering time of Arabidopsis thaliana at 10 different environments.
+phe_10env.txt: Flowering time of Arabidopsis thaliana at 10 different environments.
 
-Matched_phe_sub5000: Gene expression RPKM matrix of sampled 5000 genes.
+Matched_phe_sub5000.txt: Gene expression RPKM matrix of sampled 5000 genes.
 
 Arabidopsis_thaliana.TAIR10.55.gff3.zip: A gff3 format file of gene annotation. Please uncompress it before performing analysis.
 
-sample_10000_vcf: Vcf file containing 10,000 SNPs sampled from the raw data.
+sample_10000_snps.vcf: Vcf file containing 10,000 SNPs sampled from the raw data.
 
 ---
 ### <h3 id="1">Data Matching</h3>

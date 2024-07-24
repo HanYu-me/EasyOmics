@@ -42,14 +42,23 @@ Docker is an open-source project developed in Go language, which could package s
 For users, please visit Docker's official website to download the Docker Desktop application: https://docs.docker.com/get-docker/
 
 Notes:
-  - For Windows users, WSL2, the dependency of docker, will be automatically installed during Docker Desktop install. If an error occurs, users need to refer to Microsoft's documentation to download and set up the WSL2 subsystem manually: https://docs.microsoft.com/en-us/windows/wsl/install
+  - For Windows users, WSL2, the dependency of Docker, will be automatically installed during Docker Desktop install. If an error occurs, users need to refer to Microsoft's documentation to download and set up the WSL2 subsystem manually: https://docs.microsoft.com/en-us/windows/wsl/install
   - If your network can not access the Docker Desktop website, please contact us, and we will provide a download link of Netdisk.
 
 ### EasyOmics installation
-After installing docker users need to follow these steps:
+After installing Docker users need to follow these steps:
 - Open the Docker Desktop application.
 - Skip sign up (Optional)
 - Search for yuhan2000 and pull (download) the image yuhan2000/gwas:latest
+
+If you cannot download the image because of some network problems:
+- download image form one of below links:
+  - Figshare: https://doi.org/10.6084/m9.figshare.26317273.v1  
+  - Baidu Netdisk: https://pan.baidu.com/s/16TeFgBgAmZ9BiIiJcBGURw?pwd=gp6g
+- Uncompress gwas.tar.gz to gwas.tar
+- Go to Command (Windows sys) or Terminal (Mac sys)
+- Enter command: docker load --input downloadpath/gwas.tar
+- Check image panel in Docker Desktop
 
 <div align=center><img src="figures/image-13.png" width="450" /></div>
 

@@ -6,15 +6,14 @@ A graphical interface for population-scale omics data association, integration a
 | | |
 | --- | --- |
 | Author  | Yu Han ([yuhan](https://www.researchgate.net/profile/Yu-Han-165)) |
-| Email 1   | <yu_han@stu.scu.edu.cn> |
-| Email 2   | <yuhan2000729@gmail.com> |
-| Email 3   | <zanyanjun@caas.cn> |
+| Email 1   | <yuhan2000729@gmail.com> |
+| Email 2   | <zanyanjun@caas.cn> |
 
 ## Videos
  
  This video provides a guide through the installation process and each step of using EasyOmics.
  
- Link:
+ Link: [EasyOmics tutorial (EasyOmics 教程）]( https://www.bilibili.com/video/BV1mVveeREqS/?share_source=copy_web&vd_source=a8f4a549a6594e0a3bd83dfed4705a1c)
 
 
 ## Introduction

@@ -404,7 +404,7 @@ NA	AT1G01050	-9	NA	NA	2.54477	1.49342	0.0883824
 
 
 ## Citation
-If you use EasyOmics, please cite the apporpriate article:
+If you use EasyOmics, please cite the appropriate article:
 
 EasyOmics:
 

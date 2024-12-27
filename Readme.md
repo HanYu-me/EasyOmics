@@ -9,7 +9,7 @@ A graphical interface for population-scale omics data association, integration a
 
 Please refer to the [EasyOmics tutorial](https://hanyu-me.github.io/EasyOmics_Tutorial/)
 
-In addition, ehe tutorial of EasyOmics is also available in the `Help` page of the EasyOmics.
+In addition, the tutorial of EasyOmics is also available in the `Help` page of the EasyOmics.
 
 
 ## Contact
